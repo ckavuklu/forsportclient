@@ -1,24 +1,48 @@
 
 window.SearchManager = {
 
-    apiUrl:"http://localhost:3000/restaurants-api?",
+    apiUrl:"http://127.0.0.1:3000/restaurants-api?",
     
     search:function (searchString, successCallback, errorCallback) {
-        var searchURL = this.apiUrl + "q=" + encodeURIComponent(searchString) + "&ll=" + window.GeoWatcher.position.latitude + "," + window.GeoWatcher.position.longitude + "&d=" + new Date().getTime();
+        var searchURL = this.apiUrl + "q=" + encodeURIComponent(searchString) + "&ll=" + /*window.GeoWatcher.position.latitude*/ "32.66962" + "," + /*window.GeoWatcher.position.longitude*/ "-117.094619" + "&d=" + new Date().getTime();
 
         $.ajax({
-            timeout:20000,
+            timeout:30000,
             url:searchURL,
+            dataType: "html or json",
             success:function(result){
+            		console.log("Client Success2 " + result);
                 if ( successCallback ) {
+                	  console.log("Calling Success Callback");
                     successCallback( result );
                 }
             },
-            error:function(error){
+            /*error:function(error){
+            	  console.log("Client Error2 " + error);
                 if ( errorCallback ){
+                	  console.log("Calling Error Callback " + result.status + ' ' + result.statusText);
                     errorCallback( error );
                 }
+            }*/
+            
+            error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert('Requested JSON parse failed.');
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
             }
+        }
+
         });
 
     },
